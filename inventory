@@ -1,0 +1,14 @@
+web1 ansible_host=10.0.2.3
+web2 ansible_host=10.0.2.4
+nfs ansible_host=10.0.2.5
+proxy ansible_host=10.0.2.6
+
+[web-servers]
+web1
+web1
+
+[proxies]
+proxy
+
+[nfs-servers]
+nfs
