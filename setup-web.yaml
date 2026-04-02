@@ -1,0 +1,15 @@
+- name: 'Update and Install packages for web servers'
+  hosts: web_servers
+  become: yes
+  become_method: sudo
+  vars:
+    packages:
+      - apache2
+      - wget
+      - htop
+      - curl
+      - firewalld
+  
+  tasks:
+    - name: 'Update packages'
+      shell: sudo apt update -y
