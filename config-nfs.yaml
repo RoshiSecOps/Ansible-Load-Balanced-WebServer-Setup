@@ -1,0 +1,52 @@
+- name: Setup nfs configuration
+  hosts: nfs
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Check nfs dir exists
+      shell: ls /media/nfs
+      register: folder_present
+
+    - name: Create folder mount point
+      shell: mkdir /media/nfs
+      when: folder_present.rc != 0
+
+    - name: Create dummy file in mount point
+      shell: echo 'test-file' > /media/nfs/file.txt
+
+    - name: Check file created
+      shell: cat /media/nfs/file.txt
+      register: test_file_created
+
+    - name: Print check result
+      debug:
+        msg: '{{ test_file_created.stdout }}'
+
+    - name: Write to /etc/exports
+      blockinfile:
+        path: /etc/exports
+        block: |
+          /media/nfs 10.0.2.3(rw,sync,no_subtree_check,no_root_squash)
+          /media/nfs 10.0.2.4(rw,sync,no_subtree_check,no_root_squash)
+
+    - name: Check exports content
+      shell: tail -n 5 /etc/exports
+      register: exports_content
+
+    - name: Exportfs
+      shell: exportfs -arv
+
+    - name: Print exports content
+      debug:
+        msg: '{{ exports_content.stdout }}'
+
+    - name: Restart service
+      shell: sudo systemctl restart nfs-kernel-server
+
+    - name: Check service state
+      shell: sudo systemctl status nfs-kernel-server
+      register: service_state
+
+    - name: Print service state
+      debug:
+        msg: '{{ service_state.stdout }}'
