@@ -23,12 +23,34 @@ The automation is split into modular roles to ensure Idempotency and Reusability
 ### 1. Setup
 #### setup-*machine*.yaml file
 - Each machine has a setup file that installs the required packages and checks they are functioning as intended.
-- Configuration files are edited/created as need, you can review it inside the playbooks.
+- Running the setup playbooks will ensure all required packages are installed and ready to be utilized.
 
--
-## 🚀 How to Run -- TBD
-Prerequisites: Ensure SSH key access from your host to all four nodes.
+### 2. Config
+#### config-*machine*.yaml file
+- Each machine group has a config file as well that will edit the configuration files and ensure service restart and check the service status.
 
+### 3. Firewall-Setup
+#### firewalld-config-all.yaml file
+- With this single playbook, we automate the provisioning of firewall rules across all the nodes, ensuring adequate connectivity.
+
+### 4. SSH-Hardening
+#### harden-ssh-config.yaml
+- Lastly, we make sure that the ssh service is hardenend by disabling password logins and root logins directly via ssh.
+
+### 5. How to run
+- Setup SSH key based authentication from your ansible host
+    - This can be done by generating a single key and then utilizing the ssh-copy-id command to every host, so the key can be installed in the authorized keys section.
+- Run the playbooks
+    - Sequence to run the playbooks is web -> proxy -> nfs
+    - Example, run the setup playbooks as per the sequence above, then the config, then the firewall and finally the ssh.
+
+### 6. Mouting
+- Note that the NFS server folder gets mounted on the web servers at /var/www/html.
+
+### 7. Future Recommendations
+- Harden the Apache web servers
+- Install SSL certificate via openssl or let's encrypt (certbot) and install them on the proxy.
+- Optionally create a network diagram
 
 
 ## 🛡️ Security Posture (AppSec Focus)
