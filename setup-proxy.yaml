@@ -1,4 +1,4 @@
-- name: 'Update and Install packages for proxy oervers'
+- name: 'Update and Install packages for proxy servers'
   hosts: proxies 
   become: yes
   become_method: sudo
