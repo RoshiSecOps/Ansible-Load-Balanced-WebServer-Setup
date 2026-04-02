@@ -1,0 +1,37 @@
+- name: Setup proxy configuration
+  hosts: proxies
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Write to config
+      blockinfile:
+        path: /etc/haproxy/haproxy.cfg
+        block: |
+          frontend apache_front
+              bind *:80
+              default_backend	apache_backend_servers
+              option	forwardfor
+
+          backend apache_backend_servers
+              balance	roundrobin
+              server	backend01	10.0.2.3:80	check
+              server	backend02	10.0.2.4:80	check
+
+    - name: Check file successfully written
+      shell: cat /etc/haproxy/haproxy.cfg
+      register: conf_output
+
+    - name: Print conf output
+      debug:
+        msg: '{{ conf_output.stdout }}'
+
+    - name: Restart Service
+      shell: sudo systemctl restart haproxy
+
+    - name: Check service state
+      shell: sudo systemctl status haproxy
+      register: service_state
+
+    - name: Print service state
+      debug:
+        msg: '{{ service_state.stdout }}'
