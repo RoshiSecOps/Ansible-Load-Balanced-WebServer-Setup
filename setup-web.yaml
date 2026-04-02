@@ -29,7 +29,7 @@
       shell: sudo systemctl status apache2
       register: service_result
     
-    - name: 'Pring apache status'
+    - name: 'Print apache status'
       debug:
 	msg: '{{ service_result.stdout }}'
 
