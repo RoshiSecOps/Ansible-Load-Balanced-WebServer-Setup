@@ -1,10 +1,10 @@
-- name: 'Update and Install packages for proxy oervers'
-  hosts: proxies 
+- name: 'Update and Install packages for nfs servers'
+  hosts: nfs 
   become: yes
   become_method: sudo
   vars:
     packages:
-      - haproxy
+      - nfs-kernel-server
       - wget
       - htop
       - curl
@@ -25,15 +25,15 @@
         name: '{{ packages }}'
         state: present
     
-    - name: 'Check haproxy status'
-      shell: sudo systemctl haproxy
+    - name: 'Check nfs status'
+      shell: sudo systemctl status nfs-server-kernel
       register: service_result
       
-    - name: 'Print haproxy status'
+    - name: 'Print nfs status'
       debug:
         msg: '{{ service_result.stdout }}'
 
-    - name: 'Force start haproxy'
+    - name: 'Force start nfs'
       service:
-	name: haproxy
+	name: nfs-kernel-server
 	state: started
