@@ -44,7 +44,7 @@ The automation is split into modular roles to ensure Idempotency and Reusability
     - Sequence to run the playbooks is web -> proxy -> nfs
     - Example, run the setup playbooks as per the sequence above, then the config, then the firewall and finally the ssh.
 
-### 6. Mouting
+### 6. Mounting
 - Note that the NFS server folder gets mounted on the web servers at /var/www/html.
 
 ### 7. Future Recommendations
