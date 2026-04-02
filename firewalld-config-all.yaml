@@ -1,0 +1,31 @@
+- name: Configure firewalld rules per host 
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: Allow SSH ONLY from Ansible Server (10.0.2.2)
+      shell: |
+        firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.0.2.2" service name="ssh" accept'
+        firewall-cmd --permanent --remove-service=ssh
+
+    - name: Allow HTTP/HTTPS ONLY from Proxy IP
+      shell: |
+        firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="{{ hostvars["proxy"]["ansible_host"] }}" port port="80" protocol="tcp" accept'
+        firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="{{ hostvars["proxy"]["ansible_host"] }}" port port="443" protocol="tcp" accept'
+      when: inventory_hostname in groups['web_servers']
+
+    - name: Allow NFS ONLY from Web Server IPs
+      shell: |
+        firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="{{ hostvars["web1"]["ansible_host"] }}" service name="nfs" accept'
+        firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="{{ hostvars["web2"]["ansible_host"] }}" service name="nfs" accept'
+      when: inventory_hostname in groups['nfs_servers']
+
+    - name: Allow Public HTTP/HTTPS on Proxy
+      shell: |
+        firewall-cmd --permanent --add-service=http
+        firewall-cmd --permanent --add-service=https
+      when: inventory_hostname in groups['proxies']
+
+    - name: Reload Firewalld
+      shell: firewall-cmd --reload
