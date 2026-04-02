@@ -3,19 +3,25 @@ Goal: An Ansible-orchestrated, high-availability web stack featuring load balanc
 
 This project serves as an exercise to practice Infrastructure as Code (IaC), Network Segmentation, and Linux Hardening.
 
+---
+
 ## 🏗️ Architecture Overview
 The cluster consists of four dedicated Linux nodes (VMs) orchestrated from a central Ubuntu control plane:
 
-Node Name	IP Address	Role	Service
-haproxy-server	10.0.2.6	Load Balancer	HAProxy (Front Door)
-webserver1	10.0.2.3	App Node A	Apache (HTTPD)
-webserver2	10.0.2.4	App Node B	Apache (HTTPD)
-nfs-server	10.0.2.5	Storage Node	NFS (Shared Media/Logs)
+#### Node Name	IP Address	Role	Service
+- haproxy-server	10.0.2.6	Load Balancer	HAProxy (Front Door)
+- webserver1	10.0.2.3	App Node A	Apache (HTTPD)
+- webserver2	10.0.2.4	App Node B	Apache (HTTPD)
+- nfs-server	10.0.2.5	Storage Node	NFS (Shared Media/Logs)
+
+---
 
 ## 🔄 The Traffic Flow
 User hits 10.0.2.6 (HAProxy).
 HAProxy balances traffic between webserver1 and webserver2.
 Web Nodes serve content from a shared mount point provided by the NFS-Server.
+
+---
 
 ## 🛠️ Ansible Implementation Details
 The automation is split into modular roles to ensure Idempotency and Reusability:
@@ -52,6 +58,7 @@ The automation is split into modular roles to ensure Idempotency and Reusability
 - Install SSL certificate via openssl or let's encrypt (certbot) and install them on the proxy.
 - Optionally create a network diagram
 
+--- 
 
 ## 🛡️ Security Posture (AppSec Focus)
 Least Privilege: The NFS share is restricted to specific IP addresses.
