@@ -1,0 +1,40 @@
+- name: Setup apache configuration
+  hosts: web_servers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Create file for vhost
+      shell: sudo touch /etc/apache2/sites-available/one.com.conf
+
+    - name: Add example vhost config
+      blockinfile:
+        path: /etc/apache2/sites-available/one.com.conf
+        block: |
+          <VirtualHost *:80>
+            #ServerAdmin ivan@popov.com
+            ServerName one.example.com
+            ServerAlias one.example.com
+            DocumentRoot /var/www/html/website1/ #Put your website files like index.html here
+            ErrorLog ${APACHE_LOG_DIR}/error.log
+            CustomLog ${APACHE_LOG_DIR}/access.log combined
+          </VirtualHost>
+
+    - name: Check file written successfully
+      shell: cat /etc/apache2/sites-available/one.com.conf
+      register: conf_output
+
+    - name: Print check result
+      debug:
+        msg: '{{ conf_output.stdout }}'
+
+    - name: Restart Service
+      shell: sudo systemctl restart apache2
+
+    - name: Check service state
+      shell: sudo systemctl status apache2
+      register: service_state
+
+    - name: Print service state
+      debug:
+        msg: '{{ service_state.stdout }}'
+
