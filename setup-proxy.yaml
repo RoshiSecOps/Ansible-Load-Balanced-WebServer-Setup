@@ -1,10 +1,10 @@
 - name: 'Update and Install packages for web servers'
-  hosts: web_servers
+  hosts: proxies 
   become: yes
   become_method: sudo
   vars:
     packages:
-      - apache2
+      - haproxy
       - wget
       - htop
       - curl
@@ -24,18 +24,16 @@
       apt:
         name: '{{ packages }}'
         state: present
-	
-    - name: 'Check apache status'
-      shell: sudo systemctl status apache2
-      register: service_result
     
-    - name: 'Pring apache status'
+    - name: 'Check haproxy status'
+      shell: sudo systemctl haproxy
+      register: service_result
+      
+    - name: 'Print haproxy status'
       debug:
-	msg: '{{ service_result.stdout }}'
+        msg: '{{ service_result.stdout }}'
 
-    - name: 'Force start apache webserver'
+    - name: 'Force start haproxy'
       service:
-	name: apache2
+	name: haproxy
 	state: started
-
-
