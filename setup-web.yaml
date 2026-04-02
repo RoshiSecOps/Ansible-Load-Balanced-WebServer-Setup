@@ -13,3 +13,15 @@
   tasks:
     - name: 'Update packages'
       shell: sudo apt update -y
+  
+    - name: 'Upgrade software'
+      shell: sudo apt upgrade -y
+
+    - name: 'Clean up'
+      shell: sudo apt autoremove -y
+
+    - name: 'Install required packages'
+      apt:
+        name: '{{ packages }}'
+        state: present
+
