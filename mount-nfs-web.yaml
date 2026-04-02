@@ -1,0 +1,29 @@
+- name: Mount nfs on web servers
+  hosts: web_servers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Mount NFS to test
+      shell: mount -t nfs4 10.0.2.5:/media/nfs /var/www/html
+
+    - name: Check mounting result
+      shell: df -h
+      register: mount_result
+
+    - name: Print mount result
+      debug:
+        msg: '{{ mount_result.stdout }}'
+
+    - name: Mount Permanently
+      lineinfile:
+        path: /etc/fstab
+        line: 10.0.2.5:/media/nfs /var/www/html nfs4 defaults 0 0
+      when: mount_result == 0
+
+    - name: Verify mount
+      shell: sudo mount -a
+      register: final_result
+
+    - name: Print Result
+      debug:
+        msg: '{{ final_result.stdout }}'
