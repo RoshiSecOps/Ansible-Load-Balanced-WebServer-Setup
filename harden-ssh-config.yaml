@@ -1,0 +1,30 @@
+- name: Harden SSH
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Remove root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: PermitRootLogin	no
+
+    - name: Check root login successfully disabled
+      shell: cat /etc/ssh/sshd_config | grep PermitRootLogin
+      register: root_login
+
+    - name: Print Root login status
+      debug:
+        msg: '{{ root_login.stdout }}'
+
+    - name: Remove Password Authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: PasswordAuthentication	no
+
+    - name: Check Password authentication disabled
+      shell: cat /etc/ssh/sshd_config | grep PasswordAuthentication
+      register: password_login
+
+    - name: Print Password authentication status
+      debug:
+        msg: '{{ password_login.stdout }}'
